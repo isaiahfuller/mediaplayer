@@ -17,9 +17,9 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QLabel,
-    QMainWindow, QMenu, QMenuBar, QPushButton,
-    QSizePolicy, QSpacerItem, QStatusBar, QVBoxLayout,
-    QWidget)
+    QListWidget, QListWidgetItem, QMainWindow, QMenu,
+    QMenuBar, QPushButton, QSizePolicy, QSpacerItem,
+    QStatusBar, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -32,36 +32,26 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.player = QWidget(self.centralwidget)
-        self.player.setObjectName(u"player")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.player.sizePolicy().hasHeightForWidth())
-        self.player.setSizePolicy(sizePolicy)
-
-        self.gridLayout_2.addWidget(self.player, 0, 0, 1, 1)
-
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.label = QLabel(self.centralwidget)
-        self.label.setObjectName(u"label")
+        self.player_label_art = QLabel(self.centralwidget)
+        self.player_label_art.setObjectName(u"player_label_art")
 
-        self.horizontalLayout.addWidget(self.label)
+        self.horizontalLayout.addWidget(self.player_label_art)
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.label_2 = QLabel(self.centralwidget)
-        self.label_2.setObjectName(u"label_2")
+        self.player_label_title = QLabel(self.centralwidget)
+        self.player_label_title.setObjectName(u"player_label_title")
 
-        self.verticalLayout.addWidget(self.label_2)
+        self.verticalLayout.addWidget(self.player_label_title)
 
-        self.label_3 = QLabel(self.centralwidget)
-        self.label_3.setObjectName(u"label_3")
+        self.player_label_artist = QLabel(self.centralwidget)
+        self.player_label_artist.setObjectName(u"player_label_artist")
 
-        self.verticalLayout.addWidget(self.label_3)
+        self.verticalLayout.addWidget(self.player_label_artist)
 
 
         self.horizontalLayout.addLayout(self.verticalLayout)
@@ -72,20 +62,20 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.pushButton_2 = QPushButton(self.centralwidget)
-        self.pushButton_2.setObjectName(u"pushButton_2")
+        self.player_button_prev = QPushButton(self.centralwidget)
+        self.player_button_prev.setObjectName(u"player_button_prev")
 
-        self.horizontalLayout_2.addWidget(self.pushButton_2)
+        self.horizontalLayout_2.addWidget(self.player_button_prev)
 
-        self.pushButton = QPushButton(self.centralwidget)
-        self.pushButton.setObjectName(u"pushButton")
+        self.player_button_pause = QPushButton(self.centralwidget)
+        self.player_button_pause.setObjectName(u"player_button_pause")
 
-        self.horizontalLayout_2.addWidget(self.pushButton)
+        self.horizontalLayout_2.addWidget(self.player_button_pause)
 
-        self.pushButton_3 = QPushButton(self.centralwidget)
-        self.pushButton_3.setObjectName(u"pushButton_3")
+        self.player_button_next = QPushButton(self.centralwidget)
+        self.player_button_next.setObjectName(u"player_button_next")
 
-        self.horizontalLayout_2.addWidget(self.pushButton_3)
+        self.horizontalLayout_2.addWidget(self.player_button_next)
 
 
         self.horizontalLayout.addLayout(self.horizontalLayout_2)
@@ -99,26 +89,72 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addLayout(self.horizontalLayout_3)
 
-        self.pushButton_5 = QPushButton(self.centralwidget)
-        self.pushButton_5.setObjectName(u"pushButton_5")
+        self.player_button_shuffle = QPushButton(self.centralwidget)
+        self.player_button_shuffle.setObjectName(u"player_button_shuffle")
 
-        self.horizontalLayout.addWidget(self.pushButton_5)
+        self.horizontalLayout.addWidget(self.player_button_shuffle)
 
-        self.pushButton_4 = QPushButton(self.centralwidget)
-        self.pushButton_4.setObjectName(u"pushButton_4")
+        self.player_button_repeat = QPushButton(self.centralwidget)
+        self.player_button_repeat.setObjectName(u"player_button_repeat")
 
-        self.horizontalLayout.addWidget(self.pushButton_4)
+        self.horizontalLayout.addWidget(self.player_button_repeat)
 
 
         self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 1)
 
 
-        self.gridLayout_2.addLayout(self.gridLayout, 1, 0, 1, 1)
+        self.gridLayout_2.addLayout(self.gridLayout, 11, 0, 1, 1)
+
+        self.gridLayout_3 = QGridLayout()
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.gridLayout_3.setContentsMargins(-1, 0, 0, -1)
+        self.label = QLabel(self.centralwidget)
+        self.label.setObjectName(u"label")
+
+        self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
+
+        self.label_2 = QLabel(self.centralwidget)
+        self.label_2.setObjectName(u"label_2")
+
+        self.gridLayout_3.addWidget(self.label_2, 0, 1, 1, 1)
+
+        self.label_3 = QLabel(self.centralwidget)
+        self.label_3.setObjectName(u"label_3")
+
+        self.gridLayout_3.addWidget(self.label_3, 0, 2, 1, 1)
+
+        self.filters_genre = QListWidget(self.centralwidget)
+        self.filters_genre.setObjectName(u"filters_genre")
+
+        self.gridLayout_3.addWidget(self.filters_genre, 1, 0, 1, 1)
+
+        self.filters_artists = QListWidget(self.centralwidget)
+        self.filters_artists.setObjectName(u"filters_artists")
+
+        self.gridLayout_3.addWidget(self.filters_artists, 1, 1, 1, 1)
+
+        self.filters_albums = QListWidget(self.centralwidget)
+        self.filters_albums.setObjectName(u"filters_albums")
+
+        self.gridLayout_3.addWidget(self.filters_albums, 1, 2, 1, 1)
+
+
+        self.gridLayout_2.addLayout(self.gridLayout_3, 0, 0, 1, 1)
+
+        self.mpv_container = QWidget(self.centralwidget)
+        self.mpv_container.setObjectName(u"mpv_container")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.mpv_container.sizePolicy().hasHeightForWidth())
+        self.mpv_container.setSizePolicy(sizePolicy)
+
+        self.gridLayout_2.addWidget(self.mpv_container, 10, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1055, 21))
+        self.menubar.setGeometry(QRect(0, 0, 1055, 33))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         MainWindow.setMenuBar(self.menubar)
@@ -137,14 +173,17 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.actionConnect_to_server.setText(QCoreApplication.translate("MainWindow", u"Connect to server", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
-        self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_5.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.player_label_art.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.player_label_title.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.player_label_artist.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.player_button_prev.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.player_button_pause.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.player_button_next.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.player_button_shuffle.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.player_button_repeat.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"Genres", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Artists", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Albums", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
     # retranslateUi
 
