@@ -2,30 +2,24 @@ import os
 
 os.environ["PATH"] = os.path.dirname(__file__) + os.pathsep + os.environ["PATH"]
 import libopensonic  # noqa: E402
-import locale  # noqa: E402
 import libopensonic.connection  # noqa: E402
-import mpv  # noqa: E402
 import sys  # noqa: E402
 from getpass import getpass  # noqa: E402
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget  # noqa: E402
-from PySide6.QtCore import Qt  # noqa: E402
+from PySide6.QtWidgets import QApplication  # noqa: E402
+from mplr.views.mainwindow import MainView
+from mplr.controllers.maincontroller import MainController
+from mplr.models.model import Model
 
 
-class Test(QMainWindow):
-    def __init__(self, conn, parent=None, song_id=""):
-        super().__init__(parent)
-        self.container = QWidget(self)
-        self.setCentralWidget(self.container)
-        self.container.setAttribute(Qt.WA_DontCreateNativeAncestors)
-        self.container.setAttribute(Qt.WA_NativeWindow)
-        player = mpv.MPV(
-            wid=str(int(self.container.winId())),
-            log_handler=print,
-            loglevel="debug",
+class Test(QApplication):
+    def __init__(self, conn):
+        super().__init__()
+        self.model = Model()
+        self.main_controller = MainController(model=self.model)
+        self.main_view = MainView(
+            model=self.model, main_controller=self.main_controller, conn=conn
         )
-        song = conn.stream(song_id)
-        print(song.content)
-        player.play_bytes(song.content)
+        self.main_view.show()
 
 
 if __name__ == "__main__":
@@ -39,11 +33,5 @@ if __name__ == "__main__":
         password=pword,
         port=port,
     )
-    songs = conn.getRandomSongs(size=2)
-    song = songs[0].to_dict()
-    print(song)
-    app = QApplication(sys.argv)
-    locale.setlocale(locale.LC_NUMERIC, "C")
-    win = Test(conn=conn, song_id=song["id"])
-    win.show()
+    app = Test(conn=conn)
     sys.exit(app.exec_())
