@@ -18,7 +18,8 @@ class Player(QObject):
 
     def play_song(self, stream):
         self.mpv_init()
-        self.mpv.play_bytes(stream.content)
+        # self.mpv.play_bytes(stream.content)
+        self.mpv.play(stream)
 
     def play_pause_toggle(self):
         self.mpv.pause = not self.mpv.pause

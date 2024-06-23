@@ -22,6 +22,7 @@ class MainController(QObject):
     def play_song(self, item, col):
         song = self._model.subsonic.getSong(item.text(4))
         stream = self._model.subsonic.getStream(song)
+        # print(stream.content)
         self._model.current_song = song
         play_song = Thread(
             target=self._model.player.play_song, args=(stream,), daemon=True

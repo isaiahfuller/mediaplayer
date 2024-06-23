@@ -82,9 +82,12 @@ class Subsonic(QObject):
         settings.endArray()
 
     def getStream(self, song):
-        if song["suffix"] == "m4a":
-            return self.connection.stream(sid=song["id"], tformat="mp3")
-        return self.connection.stream(sid=song["id"])
+        # if song["suffix"] == "m4a":
+        #     return self.connection.stream(sid=song["id"], tformat="mp3")
+        sid = song["id"]
+        stream_url = f"{self.connection.baseUrl}:{self.connection.port}/rest/stream.view?id={sid}&u={self.connection.username}&p={self.connection.password}&v=1.13.0&c=AwesomeClientName&f=json"
+        # return self.connection.stream(sid=song["id"])
+        return stream_url
 
     def getSong(self, id):
         song = self.connection.getSong(id).to_dict()
