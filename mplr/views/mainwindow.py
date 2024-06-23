@@ -19,15 +19,14 @@ class MainView(QMainWindow):
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
-        # Connect the 'Connect to server' action to the server connection method in the main controller
         self._ui.actionConnect_to_server.triggered.connect(
             self._main_controller.server_connection
         )
 
-        # Connect the model's list_genres_changed signal to the load_genre_list method
-        # self._model.list_genres_changed.connect(self.load_genre_list)
+        self._model.genres_changed.connect(self.load_genre_list)
+        self._model.albums_changed.connect(self.load_album_list)
+        self._model.artists_changed.connect(self.load_artist_list)
 
-        # The following code is commented out and appears to be related to testing or debugging
         # songs = conn.getRandomSongs(size=2)
         # song = songs[0].to_dict()
         # print(song)
@@ -45,7 +44,24 @@ class MainView(QMainWindow):
 
     @Slot(list)
     def load_genre_list(self, value):
-        for genre in sorted(value):
-            new_action = QListWidgetItem(genre)
+        print("Setting genre list...")
+        for genre in value:
+            new_action = QListWidgetItem(genre["value"])
             self._ui.filters_genre.addItem(new_action)
         self._ui.filters_genre.repaint()
+
+    @Slot(list)
+    def load_artist_list(self, value):
+        print("Setting artist list...")
+        for artist in value:
+            new_action = QListWidgetItem(artist["name"])
+            self._ui.filters_artists.addItem(new_action)
+        self._ui.filters_artists.repaint()
+
+    @Slot(list)
+    def load_album_list(self, value):
+        print("Setting album list...")
+        for album in value:
+            new_action = QListWidgetItem(album["name"])
+            self._ui.filters_albums.addItem(new_action)
+        self._ui.filters_albums.repaint()

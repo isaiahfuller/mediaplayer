@@ -25,17 +25,37 @@ class MainController(QObject):
 
     def refresh(self):
         print("get lists")
-        # t = Thread(target=self.get_all_songs)
-        t = Thread(target=self.get_all_artists)
-        t.daemon = True
-        t.start()
+        genres_thread = Thread(target=self.get_genres, daemon=True)
+        artists_thread = Thread(target=self.get_all_artists, daemon=True)
+        songs_thread = Thread(target=self.get_all_songs, daemon=True)
+        albums_thread = Thread(target=self.get_all_albums, daemon=True)
+        genres_thread.start()
+        artists_thread.start()
+        songs_thread.start()
+        albums_thread.start()
 
     def get_all_songs(self):
+        print("Getting songs...")
         songs = self._model.subsonic.getAllSongs()
+        self._model.songs = songs
         return songs
 
     def get_all_artists(self):
+        print("Getting artists...")
         artists = self._model.subsonic.getAllArtists()
-        print(artists)
-        print(len(artists))
+        self._model.artists = artists
         return artists
+
+    def get_genres(self):
+        print("Getting genres...")
+        genres = sorted(
+            self._model.subsonic.getGenres()["genre"], key=lambda x: x["value"].lower()
+        )
+        self._model.genres = genres
+        return genres
+
+    def get_all_albums(self):
+        print("Gerring albums...")
+        albums = self._model.subsonic.getAllAlbums()
+        self._model.albums = albums
+        return albums
