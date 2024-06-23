@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QMainWindow, QListWidgetItem
 from PySide6.QtCore import Slot
 from mplr.views.mainwindow_ui import Ui_MainWindow
-# import mpv
 # import locale
 
 
@@ -26,7 +25,7 @@ class MainView(QMainWindow):
         )
 
         # Connect the model's list_genres_changed signal to the load_genre_list method
-        self._model.list_genres_changed.connect(self.load_genre_list)
+        # self._model.list_genres_changed.connect(self.load_genre_list)
 
         # The following code is commented out and appears to be related to testing or debugging
         # songs = conn.getRandomSongs(size=2)
@@ -42,6 +41,7 @@ class MainView(QMainWindow):
         #     loglevel="debug",
         # )
         # player.play_bytes(song.content)
+        # player.set
 
     @Slot(list)
     def load_genre_list(self, value):

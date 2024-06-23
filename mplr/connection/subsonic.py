@@ -6,6 +6,16 @@ import keyring
 
 class Subsonic:
     def __init__(self):
+        """
+        Initializes the music player settings and server connections.
+
+        This method reads the server configurations from QSettings and attempts to
+        establish connections to each server. If a server responds to a ping, it is
+        added to the list of active servers.
+
+        Attributes:
+            servers (list): A list to store active server configurations.
+        """
         settings = QSettings("Isaiah Fuller", "musicplayer")
         self.servers = []
         size = settings.beginReadArray("servers")
@@ -20,13 +30,12 @@ class Subsonic:
                 baseUrl=url, username=uname, password=pword, port=port
             )
             ping = new_server.ping()
-            print(f"Ping: {ping}")
             if ping is True:
                 self.servers.append(
                     {
-                        "uuid": uuid,
+                        "uuid": str(uuid),
                         "url": url,
-                        "port": port,
+                        "port": int(port),
                         "username": uname,
                         "password": pword,
                     }
@@ -39,6 +48,18 @@ class Subsonic:
         )
 
     def addNewServer(self, address, username, password, port):
+        """
+        Adds a new server to the list of servers and saves the configuration.
+
+        Parameters:
+        address (str): The address of the new server.
+        username (str): The username for the new server.
+        password (str): The password for the new server.
+        port (int): The port number for the new server.
+
+        Returns:
+        None
+        """
         settings = QSettings("Isaiah Fuller", "musicplayer")
         settings.beginWriteArray("servers")
         for i in range(0, len(self.servers)):
@@ -60,6 +81,80 @@ class Subsonic:
         settings.endArray()
 
     def getAllAlbums(self):
-        albums = self.connection.getAlbumList2(ltype="alphabeticalByName")
-        for album in albums:
-            print(album.to_dict())
+        """
+        Retrieves all albums from the connection in an alphabetical order by name.
+
+        This method fetches albums in batches of 500 until no more albums are available.
+        Each album is converted to a dictionary and added to the all_albums list.
+
+        Returns:
+            list: A list of dictionaries, each representing an album.
+        """
+        all_albums = []
+        i = 0
+        while True:
+            res = self.connection.getAlbumList2(
+                ltype="alphabeticalByName", size=500, offset=500 * i
+            )
+            for album in res:
+                all_albums.append(album.to_dict())
+            i += 1
+            if len(res) < 500:
+                break
+
+        return all_albums
+
+    def getAllSongs(self):
+        """
+        Retrieves all songs from the connection in batches of 500 until no more songs are found.
+
+        Returns:
+            list: A list of dictionaries, each representing a song.
+        """
+        offset = 0
+        songs = []
+        while True:
+            res = self.connection.search3(
+                "",
+                artistCount=0,
+                artistOffset=0,
+                albumCount=0,
+                albumOffset=0,
+                songCount=500,
+                songOffset=offset,
+            )
+            for song in res["songs"]:
+                songs.append(song.to_dict())
+            if res["songs"] is None or len(res["songs"]) < 500:
+                break
+            offset += 500
+        return songs
+
+    def getGenres(self):
+        """
+        Retrieves a list of genres from the database connection, formatted as
+        a list of dictionaries including the numbers of songs and albums tagged with
+        the genre
+
+        Returns:
+            list: A list of genres retrieved from the database.
+        """
+        res = self.connection.getGenres()
+        return res["genres"]
+
+    def getAllArtists(self):
+        """
+        Retrieves all artists from the database.
+
+        This method fetches artists grouped by their starting letter from the database,
+        then flattens the list and converts each artist to a dictionary format.
+
+        Returns:
+            list: A list of dictionaries, each representing an artist.
+        """
+        res = self.connection.getArtists()
+        artists = []
+        for letter in res:
+            for artist in letter.artists:
+                artists.append(artist.to_dict())
+        return artists
