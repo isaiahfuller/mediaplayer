@@ -1,10 +1,10 @@
 import uuid
-from PySide6.QtCore import QSettings
+from PySide6.QtCore import QSettings, QObject
 import libopensonic.connection
 import keyring
 
 
-class Subsonic:
+class Subsonic(QObject):
     def __init__(self):
         """
         Initializes the music player settings and server connections.
@@ -16,6 +16,7 @@ class Subsonic:
         Attributes:
             servers (list): A list to store active server configurations.
         """
+        super().__init__()
         settings = QSettings("Isaiah Fuller", "musicplayer")
         self.servers = []
         size = settings.beginReadArray("servers")
@@ -79,6 +80,15 @@ class Subsonic:
         settings.setValue("uname", username)
         keyring.set_password(str(new_uuid), username=username, password=password)
         settings.endArray()
+
+    def getStream(self, song):
+        if song["suffix"] == "m4a":
+            return self.connection.stream(sid=song["id"], tformat="mp3")
+        return self.connection.stream(sid=song["id"])
+
+    def getSong(self, id):
+        song = self.connection.getSong(id).to_dict()
+        return song
 
     def getAllAlbums(self):
         """

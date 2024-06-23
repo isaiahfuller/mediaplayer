@@ -18,13 +18,25 @@ class MainController(QObject):
         self.dialog.show()
         self.dialog.accepted.connect(self.connection)
 
+    @Slot()
+    def play_song(self, item, col):
+        song = self._model.subsonic.getSong(item.text(4))
+        stream = self._model.subsonic.getStream(song)
+        self._model.current_song = song
+        play_song = Thread(
+            target=self._model.player.play_song, args=(stream,), daemon=True
+        )
+        play_song.start()
+
+    @Slot()
+    def player_pause(self):
+        self._model.player.play_pause_toggle()
+
     def connection(self):
-        print("connecting")
         self.dialog = None
         self.refresh()
 
     def refresh(self):
-        print("get lists")
         genres_thread = Thread(target=self.get_genres, daemon=True)
         artists_thread = Thread(target=self.get_all_artists, daemon=True)
         songs_thread = Thread(target=self.get_all_songs, daemon=True)
@@ -37,6 +49,9 @@ class MainController(QObject):
     def get_all_songs(self):
         print("Getting songs...")
         songs = self._model.subsonic.getAllSongs()
+        songs.sort(key=lambda x: x["track"])
+        songs.sort(key=lambda x: x["album"])
+        songs = sorted(songs, key=lambda x: x["artist"].lower())
         self._model.songs = songs
         return songs
 

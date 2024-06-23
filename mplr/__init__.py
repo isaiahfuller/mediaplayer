@@ -2,3 +2,5 @@ from mplr.views import mainwindow, mainwindow_ui, subsonic_login, subsonic_login
 from mplr.controllers import maincontroller, subsonic_login_controller
 from mplr.models import model, subsonic_login_model
 from mplr.connection.subsonic import Subsonic
+from mplr.connection.player import Player
+from mplr.util.timeformat import time_format

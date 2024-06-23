@@ -1,6 +1,8 @@
-from PySide6.QtWidgets import QMainWindow, QListWidgetItem
+from PySide6.QtWidgets import QMainWindow, QListWidgetItem, QTreeWidgetItem
 from PySide6.QtCore import Slot
+from PySide6.QtGui import QPixmap
 from mplr.views.mainwindow_ui import Ui_MainWindow
+from mplr.util.timeformat import time_format
 # import locale
 
 
@@ -23,24 +25,42 @@ class MainView(QMainWindow):
             self._main_controller.server_connection
         )
 
+        self._ui.songs_display.itemDoubleClicked.connect(
+            self._main_controller.play_song
+        )
+        self._ui.player_button_pause.clicked.connect(self._main_controller.player_pause)
+
         self._model.genres_changed.connect(self.load_genre_list)
         self._model.albums_changed.connect(self.load_album_list)
         self._model.artists_changed.connect(self.load_artist_list)
+        self._model.songs_changed.connect(self.load_songs)
 
-        # songs = conn.getRandomSongs(size=2)
-        # song = songs[0].to_dict()
-        # print(song)
-        # app = QApplication(sys.argv)
-        # locale.setlocale(locale.LC_NUMERIC, "C")
-        # song = conn.stream(song["id"])
-        # print(song.content)
-        # player = mpv.MPV(
-        #     wid=str(int(self._ui.mpv_container.winId())),
-        #     log_handler=print,
-        #     loglevel="debug",
-        # )
-        # player.play_bytes(song.content)
-        # player.set
+        self._model.current_song_changed.connect(self.set_current_song_display)
+        self._model.player_duration_changed.connect(self.set_current_song_duration)
+
+    @Slot(dict)
+    def set_current_song_display(self, song):
+        print(song)
+        slider = self._ui.player_position_slider
+        label = self._ui.player_position_song_length
+        slider.setValue(0)
+        slider.setMaximum(song["duration"])
+        label.setText(time_format(song["duration"]))
+
+        self._ui.player_label_title.setText(song["title"])
+        self._ui.player_label_artist.setText(song["artist"])
+
+        data = self._model.subsonic.connection.getCoverArt(song["coverId"], size="100")
+        pixmap = QPixmap()
+        pixmap.loadFromData(data.content)
+        self._ui.player_label_art.setPixmap(pixmap)
+
+    @Slot(float)
+    def set_current_song_duration(self, duration):
+        label = self._ui.player_position_current
+        slider = self._ui.player_position_slider
+        label.setText(time_format(duration))
+        slider.setValue(int(duration))
 
     @Slot(list)
     def load_genre_list(self, value):
@@ -65,3 +85,24 @@ class MainView(QMainWindow):
             new_action = QListWidgetItem(album["name"])
             self._ui.filters_albums.addItem(new_action)
         self._ui.filters_albums.repaint()
+
+    @Slot(list)
+    def load_songs(self, value):
+        print("Setting songs...")
+        # keys: title, track, artist, album
+        for song in value:
+            new_item = QTreeWidgetItem()
+            item_text = [
+                song["title"],
+                song["track"],
+                song["artist"],
+                song["album"],
+                song["id"],
+            ]
+            for i in range(0, len(item_text)):
+                new_item.setText(i, str(item_text[i]))
+            self._ui.songs_display.addTopLevelItem(new_item)
+        for i in range(0, len(value)):
+            self._ui.songs_display.resizeColumnToContents(i)
+        self._ui.songs_display.hideColumn(len(item_text) - 1)
+        self._ui.songs_display.repaint()
