@@ -1,9 +1,8 @@
 from PySide6.QtWidgets import QMainWindow, QListWidgetItem, QTreeWidgetItem
 from PySide6.QtCore import Slot
 from PySide6.QtGui import QPixmap
-from mplr.views.mainwindow_ui import Ui_MainWindow
-from mplr.util.timeformat import time_format
-# import locale
+from views.mainwindow_ui import Ui_MainWindow
+from util.timeformat import time_format
 
 
 class MainView(QMainWindow):
@@ -66,16 +65,17 @@ class MainView(QMainWindow):
     def load_genre_list(self, value):
         print("Setting genre list...")
         for genre in value:
-            new_action = QListWidgetItem(genre["value"])
+            new_action = QListWidgetItem(genre.value)
             self._ui.filters_genre.addItem(new_action)
         self._ui.filters_genre.repaint()
 
     @Slot(list)
     def load_artist_list(self, value):
         print("Setting artist list...")
-        for artist in value:
-            new_action = QListWidgetItem(artist["name"])
-            self._ui.filters_artists.addItem(new_action)
+        for idx in value:
+            for artist in idx.artist:
+                new_action = QListWidgetItem(artist.name)
+                self._ui.filters_artists.addItem(new_action)
         self._ui.filters_artists.repaint()
 
     @Slot(list)

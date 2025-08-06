@@ -1,10 +1,11 @@
 from PySide6.QtCore import QObject
 import mpv
-
+import locale
 
 class Player(QObject):
     def __init__(self, model):
         super().__init__()
+        locale.setlocale(locale.LC_NUMERIC, "C")
         self._model = model
         self.mpv = mpv.MPV(video=False)
         self.mpv_init()

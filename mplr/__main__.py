@@ -1,11 +1,11 @@
 import sys
 import locale
 from PySide6.QtWidgets import QApplication
-from mplr.views.mainwindow import MainView
-from mplr.controllers.maincontroller import MainController
-from mplr.models.model import Model
-from mplr.connection.subsonic import Subsonic
-from mplr.connection.player import Player
+from views.mainwindow import MainView
+from controllers.maincontroller import MainController
+from models.model import Model
+from connection.subsonic import Subsonic
+from connection.player import Player
 
 
 class MusicPlayer(QApplication):

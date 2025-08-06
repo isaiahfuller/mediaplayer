@@ -1,7 +1,7 @@
 from PySide6.QtCore import QObject, Slot
-from mplr.views.subsonic_login import SubsonicLogin
-from mplr.controllers.subsonic_login_controller import SubsonicLoginController
-from mplr.models.subsonic_login_model import SubsonicLoginModel
+from views.subsonic_login import SubsonicLogin
+from controllers.subsonic_login_controller import SubsonicLoginController
+from models.subsonic_login_model import SubsonicLoginModel
 from threading import Thread
 
 
@@ -50,8 +50,8 @@ class MainController(QObject):
     def get_all_songs(self):
         print("Getting songs...")
         songs = self._model.subsonic.getAllSongs()
-        songs.sort(key=lambda x: x["track"])
-        songs.sort(key=lambda x: x["album"])
+        songs.sort(key=lambda x: x["track"] if "track" in x else 0)
+        songs.sort(key=lambda x: x["album"] if "track" in x else "")
         songs = sorted(songs, key=lambda x: x["artist"].lower())
         self._model.songs = songs
         return songs
@@ -65,7 +65,7 @@ class MainController(QObject):
     def get_genres(self):
         print("Getting genres...")
         genres = sorted(
-            self._model.subsonic.getGenres()["genre"], key=lambda x: x["value"].lower()
+            self._model.subsonic.getGenres(), key=lambda x: x.value.lower()
         )
         self._model.genres = genres
         return genres

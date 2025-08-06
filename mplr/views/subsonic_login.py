@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QDialog
-from mplr.views.subsonic_login_ui import Ui_SubsonicLogin
+from views.subsonic_login_ui import Ui_SubsonicLogin
 
 
 class SubsonicLogin(QDialog):

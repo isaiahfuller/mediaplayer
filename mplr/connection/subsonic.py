@@ -1,6 +1,6 @@
 import uuid
 from PySide6.QtCore import QSettings, QObject
-import libopensonic.connection
+import libopensonic
 import keyring
 
 
@@ -28,7 +28,7 @@ class Subsonic(QObject):
             uname = settings.value("uname")
             pword = keyring.get_password(str(uuid), uname)
             new_server = libopensonic.connection.Connection(
-                baseUrl=url, username=uname, password=pword, port=port
+                base_url=url, username=uname, password=pword, port=port
             )
             ping = new_server.ping()
             if ping is True:
@@ -45,7 +45,7 @@ class Subsonic(QObject):
 
     def setLoginInformation(self, address, username, password, port=4533):
         self.connection = libopensonic.connection.Connection(
-            baseUrl=address, username=username, password=password, port=port
+            base_url=address, username=username, password=password, port=port
         )
 
     def addNewServer(self, address, username, password, port):
@@ -82,15 +82,12 @@ class Subsonic(QObject):
         settings.endArray()
 
     def getStream(self, song):
-        # if song["suffix"] == "m4a":
-        #     return self.connection.stream(sid=song["id"], tformat="mp3")
         sid = song["id"]
-        stream_url = f"{self.connection.baseUrl}:{self.connection.port}/rest/stream.view?id={sid}&u={self.connection.username}&p={self.connection.password}&v=1.13.0&c=AwesomeClientName&f=json"
-        # return self.connection.stream(sid=song["id"])
+        stream_url = f"{self.connection.base_url}:{self.connection.port}/rest/stream.view?id={sid}&u={self.connection.username}&p={self.connection.password}&v=1.13.0&c=AwesomeClientName&f=json"
         return stream_url
 
     def getSong(self, id):
-        song = self.connection.getSong(id).to_dict()
+        song = self.connection.get_song(id).to_dict()
         return song
 
     def getAllAlbums(self):
@@ -106,7 +103,7 @@ class Subsonic(QObject):
         all_albums = []
         i = 0
         while True:
-            res = self.connection.getAlbumList2(
+            res = self.connection.get_album_list2(
                 ltype="alphabeticalByName", size=500, offset=500 * i
             )
             for album in res:
@@ -129,16 +126,18 @@ class Subsonic(QObject):
         while True:
             res = self.connection.search3(
                 "",
-                artistCount=0,
-                artistOffset=0,
-                albumCount=0,
-                albumOffset=0,
-                songCount=500,
-                songOffset=offset,
+                artist_count=0,
+                artist_offset=0,
+                album_count=0,
+                album_offset=0,
+                song_count=500,
+                song_offset=offset,
             )
-            for song in res["songs"]:
+            for song in res.song:
+                if song is None:
+                    continue
                 songs.append(song.to_dict())
-            if res["songs"] is None or len(res["songs"]) < 500:
+            if res is None or len(res.song) < 500:
                 break
             offset += 500
         return songs
@@ -152,8 +151,8 @@ class Subsonic(QObject):
         Returns:
             list: A list of genres retrieved from the database.
         """
-        res = self.connection.getGenres()
-        return res["genres"]
+        res = self.connection.get_genres()
+        return res
 
     def getAllArtists(self):
         """
@@ -165,9 +164,5 @@ class Subsonic(QObject):
         Returns:
             list: A list of dictionaries, each representing an artist.
         """
-        res = self.connection.getArtists()
-        artists = []
-        for letter in res:
-            for artist in letter.artists:
-                artists.append(artist.to_dict())
-        return artists
+        res = self.connection.get_artists()
+        return res.index
